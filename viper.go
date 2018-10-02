@@ -317,7 +317,7 @@ func (v *Viper) WatchConfig() {
 						event.Op&writeOrCreateMask != 0) ||
 						(currentConfigFile != "" && currentConfigFile != realConfigFile) {
 						realConfigFile = currentConfigFile
-						err := v.ReadInConfig()
+						err := v.ReadInConfig("")
 						if err != nil {
 							log.Printf("error reading config file: %v\n", err)
 						}
@@ -1187,8 +1187,9 @@ func (v *Viper) Set(key string, value interface{}) {
 
 // ReadInConfig will discover and load the configuration file from disk
 // and key/value stores, searching in one of the defined paths.
-func ReadInConfig() error { return v.ReadInConfig() }
-func (v *Viper) ReadInConfig() error {
+// key specifies a subpath to read from
+func ReadInConfig(key string) error { return v.ReadInConfig(key) }
+func (v *Viper) ReadInConfig(key string) error {
 	jww.INFO.Println("Attempting to read in config file")
 	filename, err := v.getConfigFile()
 	if err != nil {
@@ -1211,7 +1212,17 @@ func (v *Viper) ReadInConfig() error {
 	if err != nil {
 		return err
 	}
-
+	if key != "" {
+		if sub, ok := config[key]; ok {
+			if reflect.TypeOf(sub).Kind() == reflect.Map {
+				config = cast.ToStringMap(sub)
+			} else {
+				return fmt.Errorf("unable to convert value at key '%s' to map", key)
+			}
+		} else {
+			return fmt.Errorf("invalid subkey '%s'", key)
+		}
+	}
 	v.config = config
 	return nil
 }
