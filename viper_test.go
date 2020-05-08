@@ -1191,7 +1191,7 @@ func TestDirsSearch(t *testing.T) {
 		}
 	}
 
-	err = v.ReadInConfig()
+	err = v.ReadInConfig("")
 	assert.Nil(t, err)
 
 	assert.Equal(t, `value is `+filepath.Base(v.configPaths[0]), v.GetString(`key`))
@@ -1208,7 +1208,7 @@ func TestWrongDirsSearchNotFound(t *testing.T) {
 	v.AddConfigPath(`whattayoutalkingbout`)
 	v.AddConfigPath(`thispathaintthere`)
 
-	err := v.ReadInConfig()
+	err := v.ReadInConfig("")
 	assert.Equal(t, reflect.TypeOf(ConfigFileNotFoundError{"", ""}), reflect.TypeOf(err))
 
 	// Even though config did not load and the error might have
@@ -1491,7 +1491,7 @@ func TestWriteConfigTOML(t *testing.T) {
 			v2.SetConfigName(tc.configName)
 			v2.SetConfigType(tc.configType)
 			v2.SetConfigFile(tc.fileName)
-			err = v2.ReadInConfig()
+			err = v2.ReadInConfig("")
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1546,7 +1546,7 @@ func TestWriteConfigDotEnv(t *testing.T) {
 			v2.SetConfigName(tc.configName)
 			v2.SetConfigType(tc.configType)
 			v2.SetConfigFile(tc.fileName)
-			err = v2.ReadInConfig()
+			err = v2.ReadInConfig("")
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2030,7 +2030,7 @@ func newViperWithConfigFile(t *testing.T) (*Viper, string, func()) {
 	}
 	v := New()
 	v.SetConfigFile(configFile)
-	err = v.ReadInConfig()
+	err = v.ReadInConfig("")
 	require.Nil(t, err)
 	require.Equal(t, "bar", v.Get("foo"))
 	return v, configFile, cleanup
@@ -2058,7 +2058,7 @@ func newViperWithSymlinkedConfigFile(t *testing.T) (*Viper, string, string, func
 	// init Viper
 	v := New()
 	v.SetConfigFile(configFile)
-	err = v.ReadInConfig()
+	err = v.ReadInConfig("")
 	require.Nil(t, err)
 	require.Equal(t, "bar", v.Get("foo"))
 	return v, watchDir, configFile, cleanup
